@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { ShoppingCart } from "lucide-react";
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 export const CartButton: React.FC = () => {
   const { totalItems } = useCart();
@@ -9,18 +9,17 @@ export const CartButton: React.FC = () => {
 
   const handleClick = () => {
     setIsAnimating(true);
-    // Add your cart logic here
     setTimeout(() => {
       setIsAnimating(false);
-      // openCart(); // Uncomment and implement this function if needed
-    }, 500); // Match this with the animation duration
+    }, 500);
   };
 
   return (
     <button
+      type="button"
       onClick={handleClick}
       className="fixed right-16 top-4 rounded-lg bg-gray-200 p-2 transition-colors hover:bg-gray-300 dark:bg-containerBackground dark:hover:bg-containerHover"
-      aria-label="Open cart"
+      aria-label="No hace nada. Solo una animación de un ícono de carrito"
     >
       <div className="relative size-5">
         <AnimatePresence>

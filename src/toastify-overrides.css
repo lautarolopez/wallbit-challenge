@@ -1,0 +1,7 @@
+:root {
+  --toastify-color-error: #ef4444;
+}
+
+.dark {
+  --toastify-color-error: #fb923c;
+}

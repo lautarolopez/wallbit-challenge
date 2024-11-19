@@ -106,14 +106,16 @@ export const NumericInput: React.FC<NumericInputProps> = ({
           <button
             type="button"
             onClick={increment}
-            className="flex-1 rounded-tr-md bg-stone-300 px-2 hover:bg-stone-100 focus:outline-none"
+            className="flex-1 rounded-tr-md bg-stone-300 px-2 hover:bg-stone-100 focus:outline-none dark:text-black"
+            aria-label="Incrementar valor"
           >
             <ChevronUp className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={decrement}
-            className="flex-1 rounded-br-md bg-stone-300 px-2 hover:bg-stone-100 focus:outline-none"
+            className="flex-1 rounded-br-md bg-stone-300 px-2 hover:bg-stone-100 focus:outline-none dark:text-black"
+            aria-label="Decrementar valor"
           >
             <ChevronDown className="h-4 w-4" />
           </button>

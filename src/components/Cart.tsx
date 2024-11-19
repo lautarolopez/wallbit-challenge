@@ -1,8 +1,8 @@
-import { useCart } from "@/contexts/CartContext";
-import { formatDate } from "@/utils/date";
-import { ShoppingCart } from "lucide-react";
-import { CartItem } from "@/components/CartItem";
 import { AnimatePresence, motion } from "motion/react";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { CartItem } from "@/components/CartItem";
+import { formatDate } from "@/utils/date";
 
 export const Cart: React.FC = () => {
   const { cartItems, cartCreatedAt, totalCost, totalItems } = useCart();
@@ -20,7 +20,7 @@ export const Cart: React.FC = () => {
           <span className="font-poppins">
             Carrito iniciado el {formatDate(cartCreatedAt)}
           </span>
-          <ul className="scrollbar-thin scrollbar-thumb-stone-400 scrollbar-track-white dark:scrollbar-thumb-black dark:scrollbar-track-containerHover max-h-[45dvh] overflow-y-scroll">
+          <ul className="max-h-[35dvh] overflow-y-auto scrollbar-thin scrollbar-track-white scrollbar-thumb-stone-400 dark:scrollbar-track-containerHover dark:scrollbar-thumb-black sm:max-h-[45dvh]">
             <AnimatePresence>
               {cartItems.map((item, index) => (
                 <motion.li
@@ -38,10 +38,10 @@ export const Cart: React.FC = () => {
           </ul>
           <div className="mt-4 flex justify-between">
             <span className="font-poppins text-lg font-semibold">
-              Total: ${totalCost.toFixed(2)}
+              Artículos: {totalItems}
             </span>
             <span className="font-poppins text-lg font-semibold">
-              Artículos: {totalItems}
+              Total: ${totalCost.toFixed(2)}
             </span>
           </div>
         </>

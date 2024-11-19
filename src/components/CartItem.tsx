@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Trash2 } from "lucide-react";
 import { NumericInput } from "@/components/NumericInput";
 import { CartItem as CartItemType } from "@/types";
@@ -14,7 +14,7 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
   const [quantityInputValue, setQuantityInputValue] = useState(quantity);
   const { removeProductFromCart, updateProductQuantity } = useCart();
 
-  const debouncedQuantity = useDebouncedValue(quantityInputValue, 1000);
+  const debouncedQuantity = useDebouncedValue(quantityInputValue, 500);
 
   const totalPrice = price * quantityInputValue;
 
@@ -34,9 +34,13 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
     }
   }, [debouncedQuantity]);
 
+  useEffect(() => {
+    setQuantityInputValue(quantity);
+  }, [quantity]);
+
   return (
-    <li className="grid items-center gap-4 p-4 sm:grid-cols-[auto,1fr,auto,auto]">
-      <div className="relative h-20 w-full flex-shrink-0 sm:w-20">
+    <div className="flex items-center justify-between gap-4 p-4 sm:grid sm:grid-cols-[auto,1fr,auto,auto]">
+      <div className="relative hidden h-20 flex-shrink-0 sm:block sm:w-20">
         <img
           src={image}
           alt={title}
@@ -44,21 +48,23 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         />
       </div>
 
-      <div className="flex h-full flex-col justify-between overflow-x-hidden">
+      <div className="flex h-full w-[55dvw] flex-col justify-between self-start overflow-x-hidden sm:w-auto">
         <h3 className="truncate text-base font-semibold" title={title}>
           {title}
         </h3>
+        <span className="text-sm sm:hidden">x{quantity}</span>
         <button
-          className="flex items-center gap-2"
           type="button"
+          className="mt-2 flex w-fit items-center gap-2 text-wallbitBlue sm:mt-0"
           onClick={handleRemoveProduct}
+          aria-label="Eliminar del carrito"
         >
-          <Trash2 className="h-4 w-4" />
-          <span>Eliminar</span>
+          <Trash2 className="size-4" />
+          <span className="text-xs sm:text-sm">Eliminar del carrito</span>
         </button>
       </div>
 
-      <div className="mt-2 sm:mt-0">
+      <div className="hidden sm:mt-0 sm:block">
         <NumericInput
           value={quantityInputValue}
           min={1}
@@ -68,12 +74,12 @@ export const CartItem: React.FC<CartItemProps> = ({ item }) => {
         />
       </div>
 
-      <div className="flex w-28 flex-col items-start space-y-1 sm:items-end">
-        <span className="break-all text-sm">${price.toFixed(2)} u.</span>
+      <div className="flex w-28 flex-col items-end space-y-1">
+        <span className="break-all text-sm">${price.toFixed(2)} u. </span>
         <span className="break-all text-base font-bold">
           ${totalPrice.toFixed(2)}
         </span>
       </div>
-    </li>
+    </div>
   );
 };

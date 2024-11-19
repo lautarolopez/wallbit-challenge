@@ -1,11 +1,10 @@
 import { useState } from "react";
 
-interface RegularInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id?: string;
 }
 
-export const RegularInput: React.FC<RegularInputProps> = ({
+export const Input: React.FC<InputProps> = ({
   id,
   placeholder = "Escribir...",
   onChange,

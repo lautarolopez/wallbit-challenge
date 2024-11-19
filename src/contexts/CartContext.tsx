@@ -1,7 +1,9 @@
-// CartContext.tsx
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { fetchProductById } from "@/services/cart.service";
-import { CartItem } from "@/types";
+import { createContext, useContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import { fetchProductById, fetchAllProducts } from "@/services/cart.service";
+import { CartItem, Product } from "@/types";
+import { ModeType } from "@/types/mode";
+import { MODE } from "@/constants/mode";
 
 interface CartContextData {
   cartItems: CartItem[];
@@ -12,7 +14,10 @@ interface CartContextData {
   removeProductFromCart: (productId: number) => void;
   updateProductQuantity: (productId: number, quantity: number) => void;
   emptyCart: () => void;
-  error: string | null;
+  mode: ModeType;
+  toggleMode: () => void;
+  products: Product[];
+  loadingProducts: boolean;
 }
 
 interface CartProviderProps {
@@ -47,12 +52,25 @@ const saveCartCreatedAtToStorage = (date: Date): void => {
   localStorage.setItem("cartCreatedAt", date.toISOString());
 };
 
+const loadModeFromStorage = (): ModeType => {
+  const storedMode = localStorage.getItem("mode");
+  return storedMode === MODE.JUNIOR ? MODE.JUNIOR : MODE.SENIOR;
+};
+
+const saveModeToStorage = (mode: ModeType): void => {
+  localStorage.setItem("mode", mode);
+};
+
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [cartItems, setCartItems] = useState<CartItem[]>(loadCartFromStorage());
   const [cartCreatedAt, setCartCreatedAt] = useState<Date | null>(
     loadCartCreatedAtFromStorage(),
   );
-  const [error, setError] = useState<string | null>(null);
+  const [mode, setMode] = useState<ModeType>(loadModeFromStorage());
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState<boolean>(false);
+  const [hasFetchedProducts, setHasFetchedProducts] = useState<boolean>(false);
 
   useEffect(() => {
     saveCartToStorage(cartItems);
@@ -66,6 +84,17 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   }, [cartCreatedAt]);
 
+  useEffect(() => {
+    saveModeToStorage(mode);
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode === "junior" && !hasFetchedProducts) {
+      fetchProducts();
+      setHasFetchedProducts(true);
+    }
+  }, [mode, hasFetchedProducts]);
+
   const resetCartCreationDate = () => {
     const now = new Date();
     setCartCreatedAt(now);
@@ -77,8 +106,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     quantity: number,
   ): Promise<void> => {
     try {
-      setError(null);
-
       if (cartItems.length === 0) {
         resetCartCreationDate();
       }
@@ -108,7 +135,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       }
     } catch (err) {
       console.error("Error adding product to cart:", err);
-      setError("Error adding product to cart. Please try again.");
+      toast.error("Ups! No se pudo agregar el producto al carrito.");
     }
   };
 
@@ -142,6 +169,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     localStorage.removeItem("cartCreatedAt");
   };
 
+  const toggleMode = (): void => {
+    setMode((prevMode) => (prevMode === "junior" ? "senior" : "junior"));
+  };
+
   const totalItems = cartItems.reduce(
     (total, item) => total + item.quantity,
     0,
@@ -150,6 +181,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     (total, item) => total + item.price * item.quantity,
     0,
   );
+
+  const fetchProducts = async () => {
+    setLoadingProducts(true);
+    try {
+      const data = await fetchAllProducts();
+      setProducts(data);
+    } catch (error) {
+      toast.error("No se pueden cargar los productos. Intentá como un senior.");
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
 
   const contextValue: CartContextData = {
     cartItems,
@@ -160,7 +203,10 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     removeProductFromCart,
     updateProductQuantity,
     emptyCart,
-    error,
+    mode,
+    toggleMode,
+    products,
+    loadingProducts,
   };
 
   return (

@@ -4,9 +4,6 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
-      container: {
-        padding: "2rem",
-      },
       colors: {
         wallbitBlue: "#0D99FF",
         containerBackground: "#1C1C1E",
